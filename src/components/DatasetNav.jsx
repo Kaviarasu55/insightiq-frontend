@@ -1,9 +1,12 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 export default function DatasetNav() {
   const { datasetId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const innerRef = useRef(null);
+  const activeRef = useRef(null);
 
   const tabs = [
     { label: "📊 Visualizations", path: `/visualizations/${datasetId}` },
@@ -13,14 +16,30 @@ export default function DatasetNav() {
     { label: "📄 Export Report", path: `/report/${datasetId}` },
   ];
 
+  // Auto-scroll active tab to center
+  useEffect(() => {
+    if (activeRef.current && innerRef.current) {
+      const container = innerRef.current;
+      const activeTab = activeRef.current;
+      const containerWidth = container.offsetWidth;
+      const tabLeft = activeTab.offsetLeft;
+      const tabWidth = activeTab.offsetWidth;
+      container.scrollTo({
+        left: tabLeft - containerWidth / 2 + tabWidth / 2,
+        behavior: "smooth",
+      });
+    }
+  }, [location.pathname]);
+
   return (
     <div style={styles.wrapper}>
-      <div style={styles.inner}>
+      <div style={styles.inner} ref={innerRef}>
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
           return (
             <button
               key={tab.path}
+              ref={isActive ? activeRef : null}
               onClick={() => navigate(tab.path)}
               style={{
                 ...styles.tab,
@@ -50,6 +69,8 @@ const styles = {
     overflowX: "auto",
     alignItems: "center",
     height: "52px",
+    scrollbarWidth: "none",
+    msOverflowStyle: "none",
   },
   tab: {
     position: "relative",
@@ -65,6 +86,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "6px",
+    flexShrink: 0,
   },
   activeTab: {
     background:
