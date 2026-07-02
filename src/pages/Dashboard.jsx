@@ -196,7 +196,8 @@ export default function Dashboard({ user }) {
         <div style={styles.datasetsSectionHeader}>
           <h2 style={styles.sectionTitle}>Your Datasets</h2>
           <span style={styles.datasetCount}>
-            {datasets?.length ?? 0} dataset{(datasets?.length ?? 0) !== 1 ? "s" : ""}
+            {datasets?.length ?? 0} dataset
+            {(datasets?.length ?? 0) !== 1 ? "s" : ""}
           </span>
         </div>
 
@@ -235,7 +236,7 @@ export default function Dashboard({ user }) {
                   style={styles.reportButton}
                   onClick={() => handleDownloadReport(ds.id)}
                 >
-                  Download Report
+                  📄 Report
                 </button>
                 <button
                   style={styles.deleteButton}
@@ -446,17 +447,15 @@ const styles = {
     padding: "18px 20px",
     marginBottom: "10px",
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: "column",
     border: "1px solid rgba(99,102,241,0.1)",
     transition: "border-color 0.2s",
-    gap: "16px",
+    gap: "12px",
   },
   datasetLeft: {
     display: "flex",
     alignItems: "center",
     gap: "14px",
-    flex: 1,
   },
   datasetIconBox: {
     fontSize: "1.4rem",
@@ -500,7 +499,7 @@ const styles = {
   actions: {
     display: "flex",
     gap: "8px",
-    flexShrink: 0,
+    flexWrap: "wrap",
   },
   openButton: {
     background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
