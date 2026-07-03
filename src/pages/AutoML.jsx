@@ -318,7 +318,7 @@ export default function AutoML({ user }) {
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart
                   data={result.results.map((r) => ({
-                    model: r.model.split(" ").slice(0, 2).join(" "),
+                    model: r.model.replace("Regressor","").replace("Classifier","").replace("Gradient Boosting","Grad Boost").replace("Linear Regression","Linear Reg"),
                     score:
                       result.task_type === "classification" ? r.accuracy : r.r2,
                     secondary:
@@ -336,7 +336,6 @@ export default function AutoML({ user }) {
                   />
                   <YAxis
                     tick={{ fill: "#64748b", fontSize: 12 }}
-                    domain={[0, 1]}
                     tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}
                   />
                   <Tooltip

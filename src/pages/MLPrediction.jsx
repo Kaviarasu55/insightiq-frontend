@@ -287,7 +287,7 @@ export default function MLPrediction({ user }) {
                     <BarChart
                       data={trainResult.feature_importance}
                       layout="vertical"
-                      margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+                      margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -302,8 +302,8 @@ export default function MLPrediction({ user }) {
                       <YAxis
                         type="category"
                         dataKey="feature"
-                        tick={{ fill: "#94a3b8", fontSize: 13 }}
-                        width={90}
+                        tick={{ fill: "#94a3b8", fontSize: 11 }}
+                        width={70}
                       />
                       <Tooltip
                         contentStyle={{
