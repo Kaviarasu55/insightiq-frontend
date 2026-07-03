@@ -54,13 +54,11 @@ export default function Chatbot({ user }) {
   async function handleSend() {
     const trimmed = input.trim();
     if (!trimmed || sending) return;
-
     const userMsg = { role: "user", content: trimmed };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setSending(true);
     setError("");
-
     try {
       const headers = await getAuthHeader();
       const res = await axios.post(
@@ -68,8 +66,10 @@ export default function Chatbot({ user }) {
         { message: trimmed },
         { headers },
       );
-      const assistantMsg = { role: "assistant", content: res.data.reply };
-      setMessages((prev) => [...prev, assistantMsg]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: res.data.reply },
+      ]);
       setRemaining(res.data.messages_remaining);
     } catch (err) {
       const msg =
@@ -92,11 +92,11 @@ export default function Chatbot({ user }) {
 
   if (loading) {
     return (
-      <div style={styles.center}>
-        <div style={styles.loadingPulse}>
-          <span style={styles.loadingIcon}>💬</span>
-          <p style={{ color: "#64748b" }}>Loading chat history...</p>
-        </div>
+      <div style={styles.loadingScreen}>
+        <span style={{ fontSize: "2rem" }}>💬</span>
+        <p style={{ color: "#64748b", marginTop: "12px" }}>
+          Loading chat history...
+        </p>
       </div>
     );
   }
@@ -112,44 +112,36 @@ export default function Chatbot({ user }) {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        .chatbot-input::placeholder { color: #475569; }
+        .chatbot-input:focus { outline: none; border-color: rgba(99,102,241,0.4); }
       `}</style>
 
       <DatasetNav />
 
-      {/* Header */}
       <div style={styles.header}>
-        <div style={styles.headerLeft}>
-          <button
-            style={styles.backButton}
-            onClick={() => navigate(`/overview/${datasetId}`)}
-          >
-            ← Overview
-          </button>
-          <div style={styles.headerTitleRow}>
-            <div style={styles.headerIconBox}>💬</div>
-            <div>
-              <h1 style={styles.title}>AI Chatbot</h1>
-              <p style={styles.subtitle}>
-                Ask questions about your dataset in plain English
-              </p>
-            </div>
-          </div>
+        <button
+          style={styles.backButton}
+          onClick={() => navigate(`/overview/${datasetId}`)}
+        >
+          ← Overview
+        </button>
+        <div style={styles.headerCenter}>
+          <span style={styles.headerIcon}>💬</span>
+          <span style={styles.headerTitle}>AI Chatbot</span>
         </div>
-        <div style={styles.limitBadge}>
-          <span style={styles.limitNumber}>{remaining}</span>
-          <span style={styles.limitLabel}>messages left today</span>
+        <div style={styles.remainingBadge}>
+          <span style={styles.remainingNum}>{remaining}</span>
+          <span style={styles.remainingLabel}> left</span>
         </div>
       </div>
 
-      {/* Messages */}
-      <div style={styles.messagesContainer}>
+      <div style={styles.messages}>
         {messages.length === 0 && (
           <div style={styles.emptyState}>
-            <div style={styles.emptyIconBox}>🤖</div>
-            <h3 style={styles.emptyTitle}>Start a conversation</h3>
-            <p style={styles.emptyText}>
-              Ask anything about your data — trends, outliers, column meanings,
-              or just "summarize this dataset."
+            <div style={styles.emptyIcon}>🤖</div>
+            <h3 style={styles.emptyTitle}>Ask me anything about your data</h3>
+            <p style={styles.emptySubtitle}>
+              Trends, outliers, summaries — just ask in plain English
             </p>
             <div style={styles.suggestions}>
               {[
@@ -160,61 +152,54 @@ export default function Chatbot({ user }) {
               ].map((q) => (
                 <button
                   key={q}
-                  style={styles.suggestionChip}
+                  style={styles.chip}
                   onClick={() => {
                     setInput(q);
                     inputRef.current?.focus();
                   }}
                 >
-                  <span style={styles.suggestionArrow}>→</span> {q}
+                  → {q}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {messages.map((msg, index) => (
+        {messages.map((msg, i) => (
           <div
-            key={index}
+            key={i}
             style={{
-              ...styles.messageBubbleWrapper,
+              ...styles.row,
               justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+              animation: "fadeInUp 0.3s ease",
             }}
           >
             {msg.role === "assistant" && <div style={styles.avatarBot}>🤖</div>}
             <div
               style={{
-                ...styles.messageBubble,
-                ...(msg.role === "user"
-                  ? styles.userBubble
-                  : styles.assistantBubble),
+                ...styles.bubble,
+                ...(msg.role === "user" ? styles.userBubble : styles.botBubble),
               }}
             >
-              <div style={styles.messageText}><ReactMarkdown>{msg.content}</ReactMarkdown></div>
+              <ReactMarkdown>{msg.content}</ReactMarkdown>
             </div>
             {msg.role === "user" && <div style={styles.avatarUser}>👤</div>}
           </div>
         ))}
 
         {sending && (
-          <div
-            style={{
-              ...styles.messageBubbleWrapper,
-              justifyContent: "flex-start",
-            }}
-          >
+          <div style={{ ...styles.row, justifyContent: "flex-start" }}>
             <div style={styles.avatarBot}>🤖</div>
-            <div style={{ ...styles.messageBubble, ...styles.assistantBubble }}>
-              <div style={styles.typingIndicator}>
-                <span style={{ ...styles.typingDot, animationDelay: "0ms" }}>
-                  ●
-                </span>
-                <span style={{ ...styles.typingDot, animationDelay: "200ms" }}>
-                  ●
-                </span>
-                <span style={{ ...styles.typingDot, animationDelay: "400ms" }}>
-                  ●
-                </span>
+            <div style={{ ...styles.bubble, ...styles.botBubble }}>
+              <div style={styles.typing}>
+                {[0, 200, 400].map((d) => (
+                  <span
+                    key={d}
+                    style={{ ...styles.dot, animationDelay: `${d}ms` }}
+                  >
+                    ●
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -223,21 +208,20 @@ export default function Chatbot({ user }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Error */}
       {error && (
         <div style={styles.errorBar}>
-          <span>⚠️ {error}</span>
-          <button style={styles.errorDismiss} onClick={() => setError("")}>
+          ⚠️ {error}
+          <button style={styles.errorX} onClick={() => setError("")}>
             ✕
           </button>
         </div>
       )}
 
-      {/* Input */}
       <div style={styles.inputBar}>
         <textarea
           ref={inputRef}
-          style={styles.textInput}
+          className="chatbot-input"
+          style={styles.input}
           placeholder="Ask a question about your data..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -247,7 +231,7 @@ export default function Chatbot({ user }) {
         />
         <button
           style={{
-            ...styles.sendButton,
+            ...styles.sendBtn,
             opacity: !input.trim() || sending ? 0.4 : 1,
           }}
           onClick={handleSend}
@@ -262,272 +246,217 @@ export default function Chatbot({ user }) {
 
 const styles = {
   container: {
-    minHeight: "100vh",
+    height: "100vh",
     backgroundColor: "#0a0f1e",
     display: "flex",
     flexDirection: "column",
     color: "#f1f5f9",
+    overflow: "hidden",
   },
-  center: {
-    minHeight: "100vh",
+  loadingScreen: {
+    height: "100vh",
     backgroundColor: "#0a0f1e",
     color: "#f1f5f9",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
   },
-  loadingPulse: { textAlign: "center" },
-  loadingIcon: { fontSize: "2.5rem", display: "block", marginBottom: "12px" },
-
-  // Header
   header: {
     display: "flex",
+    alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    padding: "24px 32px 20px",
-    borderBottom: "1px solid rgba(99,102,241,0.1)",
-    backgroundColor: "rgba(10,15,30,0.8)",
+    padding: "10px 16px",
+    borderBottom: "1px solid rgba(99,102,241,0.15)",
+    backgroundColor: "rgba(10,15,30,0.95)",
+    flexShrink: 0,
   },
-  headerLeft: { flex: 1 },
   backButton: {
     backgroundColor: "transparent",
     color: "#475569",
     border: "1px solid rgba(99,102,241,0.15)",
     borderRadius: "8px",
-    padding: "6px 14px",
+    padding: "5px 12px",
     cursor: "pointer",
-    marginBottom: "16px",
-    fontSize: "0.83rem",
+    fontSize: "0.8rem",
   },
-  headerTitleRow: {
+  headerCenter: {
     display: "flex",
     alignItems: "center",
-    gap: "14px",
+    gap: "8px",
   },
-  headerIconBox: {
-    fontSize: "1.4rem",
-    width: "48px",
-    height: "48px",
-    backgroundColor: "rgba(99,102,241,0.1)",
-    borderRadius: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    border: "1px solid rgba(99,102,241,0.2)",
-    flexShrink: 0,
-  },
-  title: {
-    fontSize: "1.4rem",
+  headerIcon: { fontSize: "1.1rem" },
+  headerTitle: {
     fontWeight: "700",
+    fontSize: "1rem",
     color: "#f1f5f9",
-    marginBottom: "2px",
-    letterSpacing: "-0.02em",
   },
-  subtitle: { color: "#475569", fontSize: "0.85rem" },
-  limitBadge: {
-    background:
-      "linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))",
+  remainingBadge: {
+    backgroundColor: "rgba(99,102,241,0.1)",
     border: "1px solid rgba(99,102,241,0.2)",
-    borderRadius: "12px",
-    padding: "12px 20px",
-    textAlign: "center",
-    minWidth: "110px",
+    borderRadius: "20px",
+    padding: "4px 12px",
+    fontSize: "0.8rem",
   },
-  limitNumber: {
-    display: "block",
-    fontSize: "1.8rem",
+  remainingNum: {
+    color: "#a5b4fc",
     fontWeight: "700",
-    background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
   },
-  limitLabel: { color: "#475569", fontSize: "0.72rem" },
-
-  // Messages
-  messagesContainer: {
+  remainingLabel: { color: "#475569" },
+  messages: {
     flex: 1,
     overflowY: "auto",
-    padding: "24px 32px",
+    padding: "16px",
     display: "flex",
     flexDirection: "column",
-    gap: "16px",
+    gap: "12px",
   },
-
-  // Empty state
   emptyState: {
     textAlign: "center",
-    padding: "60px 20px",
-    maxWidth: "500px",
+    padding: "40px 16px",
+    maxWidth: "420px",
     margin: "0 auto",
   },
-  emptyIconBox: {
-    fontSize: "3rem",
-    display: "block",
-    marginBottom: "16px",
-    width: "72px",
-    height: "72px",
+  emptyIcon: {
+    fontSize: "2.5rem",
+    width: "64px",
+    height: "64px",
     backgroundColor: "rgba(99,102,241,0.1)",
-    borderRadius: "20px",
+    borderRadius: "16px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    margin: "0 auto 20px",
+    margin: "0 auto 16px",
     border: "1px solid rgba(99,102,241,0.2)",
   },
   emptyTitle: {
-    fontSize: "1.1rem",
+    fontSize: "1rem",
     fontWeight: "600",
     color: "#f1f5f9",
     marginBottom: "8px",
   },
-  emptyText: {
+  emptySubtitle: {
     color: "#475569",
-    fontSize: "0.88rem",
-    lineHeight: "1.6",
-    marginBottom: "24px",
+    fontSize: "0.85rem",
+    marginBottom: "20px",
+    lineHeight: "1.5",
   },
   suggestions: {
     display: "flex",
     flexDirection: "column",
     gap: "8px",
   },
-  suggestionChip: {
+  chip: {
     backgroundColor: "rgba(99,102,241,0.06)",
     color: "#64748b",
     border: "1px solid rgba(99,102,241,0.15)",
     borderRadius: "10px",
-    padding: "10px 16px",
-    fontSize: "0.85rem",
+    padding: "10px 14px",
+    fontSize: "0.83rem",
     cursor: "pointer",
     textAlign: "left",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    transition: "all 0.2s",
   },
-  suggestionArrow: {
-    color: "#6366f1",
-    fontWeight: "700",
-  },
-
-  // Message bubbles
-  messageBubbleWrapper: {
+  row: {
     display: "flex",
     alignItems: "flex-end",
-    gap: "10px",
-    animation: "fadeInUp 0.3s ease",
+    gap: "8px",
   },
-  messageBubble: {
-    maxWidth: "70%",
-    padding: "14px 18px",
+  bubble: {
+    maxWidth: "75%",
+    padding: "12px 16px",
     borderRadius: "16px",
+    fontSize: "0.9rem",
     lineHeight: "1.6",
+    wordBreak: "break-word",
   },
   userBubble: {
     background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
     borderBottomRightRadius: "4px",
-    boxShadow: "0 4px 12px rgba(99,102,241,0.2)",
+    color: "#fff",
   },
-  assistantBubble: {
+  botBubble: {
     backgroundColor: "rgba(15,23,42,0.9)",
     border: "1px solid rgba(99,102,241,0.15)",
     borderBottomLeftRadius: "4px",
-  },
-  messageText: {
-    fontSize: "0.92rem",
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-word",
     color: "#f1f5f9",
   },
   avatarBot: {
-    width: "32px",
-    height: "32px",
+    width: "30px",
+    height: "30px",
     borderRadius: "50%",
     backgroundColor: "rgba(99,102,241,0.1)",
     border: "1px solid rgba(99,102,241,0.2)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "0.9rem",
+    fontSize: "0.85rem",
     flexShrink: 0,
   },
   avatarUser: {
-    width: "32px",
-    height: "32px",
+    width: "30px",
+    height: "30px",
     borderRadius: "50%",
     background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "0.9rem",
+    fontSize: "0.85rem",
     flexShrink: 0,
   },
-
-  // Typing indicator
-  typingIndicator: {
-    display: "flex",
-    gap: "4px",
-    padding: "4px 0",
-  },
-  typingDot: {
-    fontSize: "0.8rem",
+  typing: { display: "flex", gap: "4px" },
+  dot: {
+    fontSize: "0.75rem",
     color: "#6366f1",
     animation: "typingPulse 1.4s infinite",
   },
-
-  // Error bar
   errorBar: {
     backgroundColor: "rgba(127,29,29,0.4)",
     color: "#fca5a5",
-    padding: "10px 32px",
+    padding: "8px 16px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    fontSize: "0.9rem",
-    border: "1px solid rgba(248,113,113,0.2)",
+    fontSize: "0.85rem",
+    flexShrink: 0,
   },
-  errorDismiss: {
+  errorX: {
     background: "none",
     border: "none",
     color: "#fca5a5",
     cursor: "pointer",
-    fontSize: "1rem",
   },
-
-  // Input bar
   inputBar: {
     display: "flex",
-    gap: "12px",
-    padding: "16px 32px",
+    gap: "10px",
+    padding: "12px 16px",
     borderTop: "1px solid rgba(99,102,241,0.1)",
-    backgroundColor: "rgba(10,15,30,0.9)",
+    backgroundColor: "rgba(10,15,30,0.95)",
+    flexShrink: 0,
   },
-  textInput: {
+  input: {
     flex: 1,
     backgroundColor: "rgba(15,23,42,0.8)",
     color: "#f1f5f9",
     border: "1px solid rgba(99,102,241,0.2)",
     borderRadius: "12px",
-    padding: "14px 18px",
-    fontSize: "0.92rem",
+    padding: "12px 16px",
+    fontSize: "0.9rem",
     resize: "none",
-    outline: "none",
     fontFamily: "inherit",
     lineHeight: "1.5",
   },
-  sendButton: {
+  sendBtn: {
     background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
     color: "#fff",
     border: "none",
     borderRadius: "12px",
-    width: "48px",
-    height: "48px",
-    fontSize: "1.2rem",
+    width: "46px",
+    height: "46px",
+    fontSize: "1.1rem",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
-    boxShadow: "0 0 12px rgba(99,102,241,0.3)",
   },
 };
