@@ -12,6 +12,7 @@ import {
   Cell,
 } from "recharts";
 import DatasetNav from "../components/DatasetNav";
+import ReactMarkdown from "react-markdown";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -338,9 +339,7 @@ export default function MLPrediction({ user }) {
             {trainResult.groq_explanation && (
               <div style={styles.explanationBox}>
                 <p style={styles.explanationLabel}>🤖 AI Explanation</p>
-                <p style={styles.explanationText}>
-                  {trainResult.groq_explanation}
-                </p>
+                <ReactMarkdown>{trainResult.groq_explanation}</ReactMarkdown>
               </div>
             )}
           </div>
@@ -443,9 +442,7 @@ export default function MLPrediction({ user }) {
                 {prediction.groq_explanation && (
                   <div style={{ ...styles.explanationBox, marginTop: "16px" }}>
                     <p style={styles.explanationLabel}>🤖 AI Explanation</p>
-                    <p style={styles.explanationText}>
-                      {prediction.groq_explanation}
-                    </p>
+                    <ReactMarkdown>{prediction.groq_explanation}</ReactMarkdown>
                   </div>
                 )}
               </div>
