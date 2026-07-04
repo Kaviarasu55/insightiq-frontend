@@ -358,6 +358,7 @@ export default function AutoML({ user }) {
                   <Bar
                     dataKey="score"
                     name={result.metric_label}
+                    fill="#ffffff"
                     radius={[4, 4, 0, 0]}
                   >
                     {result.results.map((r, i) => (
