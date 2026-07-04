@@ -324,7 +324,7 @@ export default function AutoML({ user }) {
                     secondary:
                       result.task_type === "classification" ? r.f1_score : null,
                   }))}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
+                  margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
