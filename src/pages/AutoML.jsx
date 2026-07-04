@@ -354,7 +354,6 @@ export default function AutoML({ user }) {
                       result.metric_label,
                     ]}
                   />
-                  <Legend />
                   <Bar
                     dataKey="score"
                     name={result.metric_label}
