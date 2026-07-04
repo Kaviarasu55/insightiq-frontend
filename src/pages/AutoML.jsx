@@ -324,7 +324,7 @@ export default function AutoML({ user }) {
                     secondary:
                       result.task_type === "classification" ? r.f1_score : null,
                   }))}
-                  margin={{ top: 10, right: 30, left: 40, bottom: 10 }}
+                  margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -332,7 +332,11 @@ export default function AutoML({ user }) {
                   />
                   <XAxis
                     dataKey="model"
-                    tick={{ fill: "#64748b", fontSize: 12 }}
+                    tick={{ fill: "#64748b", fontSize: 10 }}
+                    interval={0}
+                    angle={-25}
+                    textAnchor="end"
+                    height={50}
                   />
                   <YAxis
                     tick={{ fill: "#64748b", fontSize: 12 }}
