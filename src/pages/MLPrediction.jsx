@@ -299,6 +299,12 @@ export default function MLPrediction({ user }) {
                         type="number"
                         tick={{ fill: "#64748b", fontSize: 12 }}
                         domain={[0, "auto"]}
+                        label={{
+                          value: "Importance Score",
+                          position: "insideBottom",
+                          offset: -5,
+                          fill: "#475569",
+                        }}
                       />
                       <YAxis
                         type="category"
@@ -313,6 +319,7 @@ export default function MLPrediction({ user }) {
                           borderRadius: "8px",
                         }}
                         labelStyle={{ color: "#f1f5f9" }}
+                        itemStyle={{ color: "#f1f5f9" }}
                         formatter={(val) => [val.toFixed(4), "Importance"]}
                       />
                       <Bar dataKey="importance" radius={[0, 4, 4, 0]}>

@@ -318,7 +318,11 @@ export default function AutoML({ user }) {
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart
                   data={result.results.map((r) => ({
-                    model: r.model.replace("Regressor","").replace("Classifier","").replace("Gradient Boosting","Grad Boost").replace("Linear Regression","Linear Reg"),
+                    model: r.model
+                      .replace("Regressor", "")
+                      .replace("Classifier", "")
+                      .replace("Gradient Boosting", "Grad Boost")
+                      .replace("Linear Regression", "Linear Reg"),
                     score:
                       result.task_type === "classification" ? r.accuracy : r.r2,
                     secondary:
@@ -337,10 +341,22 @@ export default function AutoML({ user }) {
                     angle={-25}
                     textAnchor="end"
                     height={50}
+                    label={{
+                      value: "Model",
+                      position: "insideBottom",
+                      offset: -40,
+                      fill: "#475569",
+                    }}
                   />
                   <YAxis
                     tick={{ fill: "#64748b", fontSize: 12 }}
                     tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}
+                    label={{
+                      value: result.metric_label,
+                      angle: -90,
+                      position: "insideLeft",
+                      fill: "#475569",
+                    }}
                   />
                   <Tooltip
                     contentStyle={{
@@ -349,6 +365,7 @@ export default function AutoML({ user }) {
                       borderRadius: "8px",
                     }}
                     labelStyle={{ color: "#f1f5f9" }}
+                    itemStyle={{ color: "#f1f5f9" }}
                     formatter={(val) => [
                       `${(val * 100).toFixed(2)}%`,
                       result.metric_label,

@@ -349,6 +349,7 @@ function renderChart(chart) {
       borderRadius: "8px",
     },
     labelStyle: { color: "#f1f5f9" },
+    itemStyle: { color: "#f1f5f9" },
   };
 
   if (chart_type === "histogram") {
@@ -368,7 +369,10 @@ function renderChart(chart) {
     ];
     return (
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
+        <BarChart
+          data={data}
+          margin={{ top: 5, right: 20, left: 20, bottom: 45 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(99,102,241,0.1)" />
           <XAxis
             dataKey="bin"
@@ -376,8 +380,22 @@ function renderChart(chart) {
             angle={-30}
             textAnchor="end"
             height={60}
+            label={{
+              value: chart.column,
+              position: "insideBottom",
+              offset: -40,
+              fill: "#475569",
+            }}
           />
-          <YAxis tick={{ fill: "#64748b", fontSize: 12 }} />
+          <YAxis
+            tick={{ fill: "#64748b", fontSize: 12 }}
+            label={{
+              value: "Frequency",
+              angle: -90,
+              position: "insideLeft",
+              fill: "#475569",
+            }}
+          />
           <Tooltip {...tooltipStyle} />
           <Bar dataKey="count" radius={[4, 4, 0, 0]}>
             {data.map((_, index) => (
@@ -407,10 +425,30 @@ function renderChart(chart) {
     const yKey = isAggregated ? "value" : "count";
     return (
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
+        <BarChart
+          data={data}
+          margin={{ top: 5, right: 20, left: 20, bottom: 20 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(99,102,241,0.1)" />
-          <XAxis dataKey="category" tick={{ fill: "#64748b", fontSize: 12 }} />
-          <YAxis tick={{ fill: "#64748b", fontSize: 12 }} />
+          <XAxis
+            dataKey="category"
+            tick={{ fill: "#64748b", fontSize: 12 }}
+            label={{
+              value: chart.column,
+              position: "insideBottom",
+              offset: -5,
+              fill: "#475569",
+            }}
+          />
+          <YAxis
+            tick={{ fill: "#64748b", fontSize: 12 }}
+            label={{
+              value: isAggregated ? "Value" : "Count",
+              angle: -90,
+              position: "insideLeft",
+              fill: "#475569",
+            }}
+          />
           <Tooltip
             {...tooltipStyle}
             formatter={(val) =>
@@ -467,7 +505,10 @@ function renderChart(chart) {
   if (chart_type === "line") {
     return (
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 20, left: 20, bottom: 45 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(99,102,241,0.1)" />
           <XAxis
             dataKey="x"
@@ -475,8 +516,22 @@ function renderChart(chart) {
             angle={-30}
             textAnchor="end"
             height={60}
+            label={{
+              value: chart.x_col || chart.column,
+              position: "insideBottom",
+              offset: -40,
+              fill: "#475569",
+            }}
           />
-          <YAxis tick={{ fill: "#64748b", fontSize: 12 }} />
+          <YAxis
+            tick={{ fill: "#64748b", fontSize: 12 }}
+            label={{
+              value: chart.y_col || "Value",
+              angle: -90,
+              position: "insideLeft",
+              fill: "#475569",
+            }}
+          />
           <Tooltip {...tooltipStyle} />
           <Line
             type="monotone"
