@@ -212,6 +212,19 @@ export default function AutoML({ user }) {
                 </div>
               </div>
 
+              {result.small_sample_warning && (
+                <p
+                  style={{
+                    color: "#f59e0b",
+                    fontSize: 13,
+                    marginTop: 8,
+                    marginBottom: 16,
+                  }}
+                >
+                  ⚠️ {result.small_sample_warning}
+                </p>
+              )}
+
               <h2 style={styles.sectionTitle}>Model Comparison</h2>
               <div style={styles.tableWrapper}>
                 <table style={styles.table}>
@@ -366,9 +379,9 @@ export default function AutoML({ user }) {
                     }}
                     labelStyle={{ color: "#f1f5f9" }}
                     itemStyle={{ color: "#f1f5f9" }}
-                    formatter={(val) => [
+                    formatter={(val, name) => [
                       `${(val * 100).toFixed(2)}%`,
-                      result.metric_label,
+                      name,
                     ]}
                   />
                   <Bar

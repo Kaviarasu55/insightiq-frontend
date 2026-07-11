@@ -280,6 +280,12 @@ export default function MLPrediction({ user }) {
               )}
             </div>
 
+            {trainResult.small_sample_warning && (
+              <p style={{ color: "#f59e0b", fontSize: 13, marginTop: 8 }}>
+                ⚠️ {trainResult.small_sample_warning}
+              </p>
+            )}
+
             {trainResult.feature_importance &&
               trainResult.feature_importance.length > 0 && (
                 <div style={styles.chartSection}>
